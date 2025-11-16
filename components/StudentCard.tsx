@@ -5,6 +5,7 @@ import AddTaskForm from './AddTaskForm';
 import ProgressBar from './ProgressBar';
 import RankDisplay from './RankDisplay';
 import { TrashIcon } from './Icons';
+import { playSound, TASK_COMPLETE_SOUND } from '../utils/soundUtils';
 
 interface StudentCardProps {
   student: Student;
@@ -34,8 +35,14 @@ const StudentCard: React.FC<StudentCardProps> = ({ student, updateStudent, delet
     let xpChange = 0;
     const updatedTasks = tasks.map(task => {
       if (task.id === taskId) {
-        xpChange = task.isCompleted ? -task.xp : task.xp;
-        return { ...task, isCompleted: !task.isCompleted };
+        const isCompleting = !task.isCompleted;
+        xpChange = isCompleting ? task.xp : -task.xp;
+
+        if (isCompleting) {
+          playSound(TASK_COMPLETE_SOUND);
+        }
+
+        return { ...task, isCompleted: isCompleting };
       }
       return task;
     });
